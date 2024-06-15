@@ -24,6 +24,3 @@ class Settings(BaseSettings):
     def get_db_uri(self):
         return self.get_test_uri() if self.MODE == "test" else self.get_development_db_uri()
 
-
-env_file = '/home/masoud/Desktop/projects/volleyball_analytics/conf/.env'
-settings = Settings(_env_file=env_file, _env_file_encoding='utf-8')
