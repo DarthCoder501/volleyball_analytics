@@ -1,10 +1,9 @@
-from fastapi import HTTPException, status, APIRouter, Depends
-from sqlalchemy.orm import Session
 from typing_extensions import List
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status, APIRouter, Depends
 
-from src.backend.app.crud.base import CRUDBase
-from src.backend.app.db.engine import get_db
 from src.backend.app.models.models import Team
+from src.backend.app import CRUDBase, get_db
 from src.backend.app.schemas.teams import TeamBaseSchema, TeamCreateSchema
 
 router = APIRouter()

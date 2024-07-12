@@ -2,9 +2,8 @@ from fastapi import HTTPException, status, APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing_extensions import List
 
-from src.backend.app.crud.base import CRUDBase
-from src.backend.app.db.engine import get_db
 from src.backend.app.models import models
+from src.backend.app import get_db, CRUDBase
 from src.backend.app.schemas import series, matches
 
 router = APIRouter()

@@ -1,11 +1,10 @@
 from typing_extensions import List
-
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status, APIRouter
-from ...crud import CRUDBase
-from ...db.engine import get_db
-from ...models import Player
-from src.backend.app.schemas.players import PlayerCreateSchema, PlayerBaseSchema
+
+from src.backend.app import get_db, CRUDBase
+from src.backend.app.models import Player
+from src.backend.app.schemas import PlayerCreateSchema, PlayerBaseSchema
 
 router = APIRouter()
 

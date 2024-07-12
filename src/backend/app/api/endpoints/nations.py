@@ -1,11 +1,10 @@
-from fastapi import HTTPException, status, APIRouter, Depends
-from sqlalchemy.orm import Session
 from typing_extensions import List
+from sqlalchemy.orm import Session
+from fastapi import HTTPException, status, APIRouter, Depends
 
-from src.backend.app.crud.base import CRUDBase
-from src.backend.app.db.engine import get_db
-from src.backend.app.models.models import Nation
-from src.backend.app.schemas.nations import NationBaseSchema, NationCreateSchema
+from src.backend.app.models import Nation
+from src.backend.app import CRUDBase, get_db
+from src.backend.app.schemas import NationBaseSchema, NationCreateSchema
 
 router = APIRouter()
 
