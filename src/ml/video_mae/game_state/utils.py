@@ -12,7 +12,7 @@ from src.backend.app.enums.enums import GameState, ServiceType
 from src.utilities.utils import timeit, BoundingBox, ProjectLogger, state_summarize
 from src.backend.app.schemas import services, rallies, matches, series, videos
 from src.ml.yolo.volleyball_object_detector import VolleyBallObjectDetector
-from src.ml.video_mae.game_state.gamestate_detection import GameStateDetector
+from src.ml.video_mae.game_state.gamestate import GameStateClassifier
 
 
 class Manager:
@@ -24,7 +24,7 @@ class Manager:
                          ML operations.
         """
         self.api_interface = APIInterface(url=url)
-        self.state_detector = GameStateDetector(cfg=cfg['video_mae']['game_state_3'])
+        self.state_detector = GameStateClassifier(cfg=cfg['video_mae']['game_state_3'])
 
         self.match: matches.MatchCreateSchema = self.api_interface.get_match(match_id=int(cfg['match_id']))
         self.video: videos.VideoCreateSchema = self.api_interface.get_video(video_id=self.match.video_id)
@@ -300,11 +300,11 @@ class Manager:
         receives_js = {}
 
         for i, objects in enumerate(batch_vb_objects):
-            balls = [obj.xyxy_dict for obj in objects['ball']]
-            blocks = [obj.xyxy_dict for obj in objects['block']]
-            sets = [obj.xyxy_dict for obj in objects['set']]
-            spikes = [obj.xyxy_dict for obj in objects['spike']]
-            receives = [obj.xyxy_dict for obj in objects['receive']]
+            balls = [obj.to_xyxy for obj in objects['ball']]
+            blocks = [obj.to_xyxy for obj in objects['block']]
+            sets = [obj.to_xyxy for obj in objects['set']]
+            spikes = [obj.to_xyxy for obj in objects['spike']]
+            receives = [obj.to_xyxy for obj in objects['receive']]
             if len(balls):
                 balls_js[i] = balls
             if len(blocks):
@@ -327,7 +327,7 @@ class Manager:
 
 
 def annotate_service(
-        serve_detection_model: GameStateDetector, video_path: str, output_path: str, buffer_size: int = 30
+        serve_detection_model: GameStateClassifier, video_path: str, output_path: str, buffer_size: int = 30
 ):
     """Annotates the video frames based on the game-state detector detections.
 

@@ -91,7 +91,7 @@ class PlayerDetector:
             if use_ellipse:
                 frame = bb.draw_ellipse(frame, color)
             if use_bbox:
-                frame = bb.plot(frame, color, title=bb.name if use_title else '')
+                frame = bb.draw_lines(frame, color, title=bb.name if use_title else '')
         return frame
 
 

@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 
 from src.utilities.utils import ProjectLogger
 from src.backend.app.enums.enums import GameState
-from src.ml.video_mae.game_state.gamestate_detection import GameStateDetector
+from src.ml.video_mae.game_state.gamestate import GameStateClassifier
 from src.ml.yolo.volleyball_object_detector import VolleyBallObjectDetector
 
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     model_cfg.update(setup_cfg)
     logger.info("Configs initialized successfully.")
-    state_detector = GameStateDetector(cfg=model_cfg['video_mae']['game_state_3'])
+    state_detector = GameStateClassifier(cfg=model_cfg['video_mae']['game_state_3'])
     vb_object_detector = VolleyBallObjectDetector(
         model_cfg,
         use_player_detection=True,

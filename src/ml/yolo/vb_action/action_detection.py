@@ -64,17 +64,17 @@ class ActionDetector:
         for bb in items:
             match bb.name:
                 case 'spike':
-                    frame = bb.plot(frame, color=Meta.bgr_orange, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.bgr_orange, title=bb.name)
                 case 'set':
-                    frame = bb.plot(frame, color=Meta.bgr_aqua, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.bgr_aqua, title=bb.name)
                 case 'receive':
-                    frame = bb.plot(frame, color=Meta.green, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.green, title=bb.name)
                 case 'block':
-                    frame = bb.plot(frame, color=Meta.bgr_purple, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.bgr_purple, title=bb.name)
                 case 'serve':
-                    frame = bb.plot(frame, color=Meta.bgr_brown, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.bgr_brown, title=bb.name)
                 case 'ball':
-                    frame = bb.plot(frame, color=Meta.bgr_red, title=bb.name)
+                    frame = bb.draw_lines(frame, color=Meta.bgr_red, title=bb.name)
         return frame
 
 

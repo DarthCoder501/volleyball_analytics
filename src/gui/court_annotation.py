@@ -10,7 +10,7 @@ from mathutils.geometry import intersect_point_line
 from numpy._typing import NDArray
 from typing_extensions import Tuple
 
-from src.ml.yolo.court.segmentation import CourtSegmentor
+from src.ml.yolo.court.court_segmentation import CourtSegmentor
 
 
 class CourtAnnotator(object):

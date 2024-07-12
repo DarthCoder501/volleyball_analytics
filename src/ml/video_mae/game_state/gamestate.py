@@ -14,7 +14,7 @@ from transformers import VideoMAEImageProcessor, VideoMAEForVideoClassification
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 
-class GameStateDetector:
+class GameStateClassifier:
     def __init__(self, cfg: dict):
         ckpt = cfg['weight']
         print("Initializing model and transforms...")

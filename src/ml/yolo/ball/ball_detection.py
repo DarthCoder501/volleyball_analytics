@@ -9,8 +9,6 @@ from src.utilities.utils import BoundingBox, Meta
 
 # weights = '/home/masoud/Desktop/projects/volleyball_analytics/weights/ball_segment/model2/weights/best.pt'
 
-__all__ = ['BallSegmentor']
-
 
 class BallSegmentor:
     def __init__(self, cfg: dict):
@@ -54,7 +52,7 @@ class BallSegmentor:
             if use_ellipse:
                 input_frame = bb.draw_ellipse(input_frame, color)
             if use_bbox:
-                input_frame = bb.plot(input_frame, color, title=bb.name if use_title else '')
+                input_frame = bb.draw_lines(input_frame, color, title=bb.name if use_title else '')
         return input_frame
 
 
