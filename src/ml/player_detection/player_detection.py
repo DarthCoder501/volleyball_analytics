@@ -46,7 +46,7 @@ class PlayerDetector:
             detections: List[BoundingBox] = []
             for box, conf in zip(boxes, confs):
                 # TODO: make it suitable for multi-class yolo.
-                b = BoundingBox(box, name='ball', conf=float(conf))
+                b = BoundingBox(box, name='ball_detection', conf=float(conf))
                 detections.append(b)
             detections.sort(key=lambda x: (x.conf, x.area), reverse=True)
             results.append(detections)
@@ -56,7 +56,7 @@ class PlayerDetector:
                by_zone: bool = True):
         """
         filter the bounding boxes of people based on the size of bounding box,
-        whether their steps are in the court.
+        whether their steps are in the court_segmentation.
         Args:
             by_zone:
             bboxes:
@@ -67,7 +67,7 @@ class PlayerDetector:
 
         """
         if self.court is not None:
-            # Keep the players that their legs keypoint (x, y) are inside the polygon-shaped court ...
+            # Keep the player_detection that their legs keypoint (x, y) are inside the polygon-shaped court_segmentation ...
             if by_zone:
                 bboxes = [b for b in bboxes if
                           any([self.court.is_inside_main_zone(b.left_down),

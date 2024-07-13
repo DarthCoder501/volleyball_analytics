@@ -56,34 +56,9 @@ def state_summarize(states):
     return temp
 
 
-# class ColorPalette:
-#     white = (255, 255, 255)
-#     black = (0, 0, 0)
-#     purple = (148, 0, 211)
-#     magenta = (255, 0, 255)
-#     blue = (0, 0, 255)
-#     green = (0, 255, 0)
-#     yellow = (255, 215, 0)
-#     orange = (255, 140, 0)
-#     brown = (205, 133, 63)
-#     pink = (240, 128, 128)
-#     red = (255, 0, 0)
-#     aqua = (0, 255, 255)
-#     grey = (128, 128, 128)
-#
-#     bgr_purple = (211, 0, 148)
-#     bgr_blue = (255, 0, 0)
-#     bgr_red = (0, 0, 255)
-#     bgr_orange = (0, 140, 255)
-#     bgr_yellow = (0, 215, 255)
-#     bgr_pink = (128, 128, 240)
-#     bgr_brown = (63, 133, 205)
-#     bgr_aqua = (255, 255, 0)
-
-
 class CourtCoordinates:
     def __init__(self, points: dict):
-        self.court = np.array(points['court'], dtype=np.int32)
+        self.court = np.array(points['court_segmentation'], dtype=np.int32)
         self.front = np.array(points['attack'], dtype=np.int32)
         self.center_line = np.array(points['center'], dtype=np.int32)
         self.net = np.array(points['net'], dtype=np.int32)

@@ -9,8 +9,8 @@ from copy import deepcopy
 from natsort import natsorted
 import xml.etree.ElementTree as ET
 
-from src.ml.yolo.ball import BallSegmentor
-from src.ml.yolo.vb_action.action_detection import ActionDetector
+from src.ml.ball_detection import BallSegmentor
+from src.ml.action_detection.action_detection import ActionDetector
 from src.utilities.utils import BoundingBox
 from notebooks.utils import Bbox, ImageAnnot
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     action_cfg = {
         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/vb_actions_6_class/model1/weights/best.pt',
         "labels": {
-            0: 'ball',
+            0: 'ball_detection',
             1: 'block',
             2: 'receive',
             3: 'set',
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     }
     ball_cfg = {
         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/ball_segment/model2/weights/best.pt',
-        "labels": {0: 'ball'}
+        "labels": {0: 'ball_detection'}
     }
 
     action_detector = ActionDetector(action_cfg)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         img = cv2.imread(img_path.as_posix())
         bboxes = action_detector.predict(img)
         balls: List[BoundingBox] = ball_detector.predict(img)
-        bboxes = [box for box in bboxes if box.name != 'ball']
+        bboxes = [box for box in bboxes if box.name != 'ball_detection']
         bboxes.extend(balls)
         if len(bboxes):
             yolo_fmt.add_bboxes(img_annot=img_annot, yolo_bboxes=bboxes)

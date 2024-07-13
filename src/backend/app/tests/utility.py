@@ -38,7 +38,7 @@ class VBTest(unittest.TestCase):
 
     def create_players(self, **kwargs) -> players.PlayerBaseSchema:
         s = players.PlayerCreateSchema(**kwargs)
-        r = self.client.post('/api/players/', json=s.model_dump())
+        r = self.client.post('/api/player_detection/', json=s.model_dump())
         s = players.PlayerBaseSchema(**r.json())
         return s
 

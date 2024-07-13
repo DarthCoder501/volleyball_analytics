@@ -171,8 +171,8 @@ class Rally(Base):
         service: the detected services and their attributes.
         ball_positions: the detected balls and their positioning.
         rally_states: Denotes the output of the game state classification.
-        team1_positions: Team1 players positioning.
-        team2_positions: Team2 players positioning.
+        team1_positions: Team1 player_detection positioning.
+        team2_positions: Team2 player_detection positioning.
         result: The results of the rally. scores, the referee gesture results, the reason the rally ended.
     """
     id: Mapped[int] = Column(Integer, primary_key=True)

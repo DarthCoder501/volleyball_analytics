@@ -1,7 +1,7 @@
 import yaml
 
-from src.ml.video_mae.game_state.gamestate import GameStateClassifier
-from src.ml.video_mae.game_state.utils import annotate_service
+from src.ml.game_state_classification.gamestate import GameStateClassifier
+from src.ml.game_state_classification.utils import annotate_service
 from argparse import ArgumentParser
 
 
@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument(
         '--output_path',
         type=str,
-        default="/home/masoud/Desktop/projects/volleyball_analytics/runs/inference/game_state"
+        default="/home/masoud/Desktop/projects/volleyball_analytics/runs/inference/game_state_classification"
     )
     parser.add_argument(
         '--buffer-size',

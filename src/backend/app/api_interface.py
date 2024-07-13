@@ -19,7 +19,7 @@ class APIInterface:
         self.camera_url = urljoin(self.base_url, '/api/cameras/')
         self.match_url = urljoin(self.base_url, '/api/matches/')
         self.nation_url = urljoin(self.base_url, '/api/nations/')
-        self.player_url = urljoin(self.base_url, '/api/players/')
+        self.player_url = urljoin(self.base_url, '/api/player_detection/')
         self.rally_url = urljoin(self.base_url, '/api/rallies/')
         self.series_url = urljoin(self.base_url, '/api/series/')
         self.team_url = urljoin(self.base_url, '/api/teams/')

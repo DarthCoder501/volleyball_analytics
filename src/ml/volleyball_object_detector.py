@@ -7,16 +7,16 @@ from numpy.typing import NDArray
 from yaml.loader import SafeLoader
 
 from src.utilities.utils import BoundingBox
-from .ball import BallSegmentor
-from .vb_action import ActionDetector
-from .players import PlayerSegmentor, PlayerDetector, PoseEstimator
+from src.ml.ball_detection import BallSegmentor
+from src.ml.action_detection import ActionDetector
+from src.ml.player_detection import PlayerSegmentor, PlayerDetector, PoseEstimator
 
 
 class VolleyBallObjectDetector:
     def __init__(self, config: dict, video_name: str = None, use_player_detection=True):
         self.config = config
         court_dict = None
-        # TODO: make it work even if there is no court json for the specific match....
+        # TODO: make it work even if there is no court_segmentation json for the specific match....
         if video_name is not None:
             try:
                 court_dict = json.load(open(self.config['court_json']))[video_name]
@@ -49,7 +49,7 @@ class VolleyBallObjectDetector:
     def segment_players(self, inputs: NDArray | List[NDArray]):
         return self.player_detector.predict(frame=inputs)
 
-    def extract_objects(self, bboxes: List[BoundingBox], item: str = 'ball'):
+    def extract_objects(self, bboxes: List[BoundingBox], item: str = 'ball_detection'):
         return self.action_detector.extract_classes(bboxes=bboxes, item=item)
 
     def draw_bboxes(self, image, bboxes):

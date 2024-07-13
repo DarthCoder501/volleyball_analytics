@@ -11,12 +11,12 @@ class PlayerTest(VBTest):
         team = self.create_team(name='USA')
         player = PlayerCreateSchema(first_name='Benjamin', last_name='Patch', role=pos.OPPOSITE_HITTER, height=202,
                                     weight=84, nation_id=nation.id, team_id=team.id)
-        response = self.client.post("/api/players/", json=player.model_dump())
+        response = self.client.post("/api/player_detection/", json=player.model_dump())
         self.assertEqual(response.status_code, 201)
 
         player_output = response.json()
         player_output = PlayerBaseSchema(**player_output)
-        response = self.client.get(f"/api/players/{player_output.id}")
+        response = self.client.get(f"/api/player_detection/{player_output.id}")
         self.assertEqual(response.status_code, 200)
 
     def test_get_all_players(self):
@@ -28,10 +28,10 @@ class PlayerTest(VBTest):
         tony = PlayerCreateSchema(first_name='Tony', last_name='Defalco', role=pos.OPPOSITE_HITTER, height=202,
                                   weight=84, nation_id=nation.id, team_id=team.id)
 
-        _ = self.client.post("/api/players/", json=benjamin.model_dump())
-        _ = self.client.post("/api/players/", json=tony.model_dump())
+        _ = self.client.post("/api/player_detection/", json=benjamin.model_dump())
+        _ = self.client.post("/api/player_detection/", json=tony.model_dump())
 
-        response = self.client.get("/api/players/")
+        response = self.client.get("/api/player_detection/")
         js = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(js), 2)
@@ -42,13 +42,13 @@ class PlayerTest(VBTest):
         team = self.create_team(name='USA')
         player = PlayerCreateSchema(first_name='Benjamin', last_name='Patch', role=pos.OPPOSITE_HITTER, height=202,
                                     weight=84, nation_id=nation.id, team_id=team.id)
-        resp = self.client.post("/api/players/", json=player.model_dump())
+        resp = self.client.post("/api/player_detection/", json=player.model_dump())
         player = PlayerBaseSchema(**resp.json())
 
         player.first_name = 'Tony'
         player.last_name = 'Defalco'
-        _ = self.client.put(f"/api/players/{player.id}", json=player.model_dump())
-        resp = self.client.get(f"/api/players/{player.id}")
+        _ = self.client.put(f"/api/player_detection/{player.id}", json=player.model_dump())
+        resp = self.client.get(f"/api/player_detection/{player.id}")
         output = resp.json()
         self.assertEqual(output['first_name'], player.first_name)
         self.assertEqual(resp.status_code, 200)
@@ -59,11 +59,11 @@ class PlayerTest(VBTest):
         team = self.create_team(name='USA')
         player = PlayerCreateSchema(first_name='Benjamin', last_name='Patch', role=pos.OPPOSITE_HITTER, height=202,
                                     weight=84, nation_id=nation.id, team_id=team.id)
-        resp = self.client.post("/api/players/", json=player.model_dump())
+        resp = self.client.post("/api/player_detection/", json=player.model_dump())
         player = PlayerBaseSchema(**resp.json())
 
-        f = self.client.delete(f"/api/players/{player.id}")
+        f = self.client.delete(f"/api/player_detection/{player.id}")
         self.assertEqual(f.status_code, 200)
 
-        resp = self.client.get(f"/api/players/{player.id}")
+        resp = self.client.get(f"/api/player_detection/{player.id}")
         self.assertEqual(resp.status_code, 404)

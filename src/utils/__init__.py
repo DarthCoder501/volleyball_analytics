@@ -1,6 +1,6 @@
 from .boundingbox import BoundingBox
-from .plot import sv_plot
-from .utils import ColorPalette
-from .data_types import DatasetType, PlotType
+from .keypointbox import KeyPointBox
+from .plot import SuperVisionPlot
+from .data_types import DatasetType, BoxPlotType, KeyPointPlotType
 
-__all__ = 'BoundingBox', 'ColorPalette', 'DatasetType', 'PlotType', 'sv_plot'
+__all__ = 'BoundingBox', 'KeyPointBox', 'DatasetType', 'BoxPlotType', 'KeyPointPlotType', 'SuperVisionPlot'

@@ -15,7 +15,7 @@ def root():
 app.include_router(cameras.router, prefix="/api/cameras", tags=["cameras"])
 app.include_router(matches.router, prefix="/api/matches", tags=["matches"])
 app.include_router(nations.router, prefix="/api/nations", tags=["nations"])
-app.include_router(players.router, prefix="/api/players", tags=["players"])
+app.include_router(players.router, prefix="/api/player_detection", tags=["player_detection"])
 app.include_router(rallies.router, prefix="/api/rallies", tags=["rallies"])
 app.include_router(series.router, prefix="/api/series", tags=["series"])
 app.include_router(teams.router, prefix="/api/teams", tags=["teams"])

@@ -3,7 +3,7 @@ import yaml
 from tqdm import tqdm
 from gamestate import GameStateClassifier
 from src.backend.app.models.models import Video
-from src.ml.video_mae.game_state.utils import Manager
+from src.ml.game_state_classification.utils import Manager
 
 if __name__ == '__main__':
     config = '/home/masoud/Desktop/projects/volleyball_analytics/conf/ml_models.yaml'

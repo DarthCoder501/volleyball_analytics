@@ -10,13 +10,13 @@ yolo:
     labels: {0: 'person'}
   ball_segmentation:
     weight: "/home/masoud/Desktop/projects/volleyball_analytics/weights/ball_segment/model1/weights/best.pt"
-    labels: {0: "ball"}
+    labels: {0: "ball_detection"}
   action_detection6:
     weight: "/home/masoud/Desktop/projects/volleyball_analytics/weights/action_detection/6_class/1/weights/best.pt"
-    labels: { 0: 'ball', 1: 'block', 2: "receive", 3: 'set', 4: 'spike', 5: 'serve'}
+    labels: { 0: 'ball_detection', 1: 'block', 2: "receive", 3: 'set', 4: 'spike', 5: 'serve'}
   court_segment:
     weight: "/home/masoud/Desktop/projects/volleyball_analytics/weights/court_segment/weights/best.pt"
-    labels: { 0: "court"}
+    labels: { 0: "court_segmentation"}
 
 video_mae:
   game_state_3:

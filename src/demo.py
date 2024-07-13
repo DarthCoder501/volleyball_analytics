@@ -9,8 +9,8 @@ from argparse import ArgumentParser
 
 from src.utilities.utils import ProjectLogger
 from src.backend.app.enums.enums import GameState
-from src.ml.video_mae.game_state.gamestate import GameStateClassifier
-from src.ml.yolo.volleyball_object_detector import VolleyBallObjectDetector
+from src.ml.game_state_classification.gamestate import GameStateClassifier
+from src.ml.volleyball_object_detector import VolleyBallObjectDetector
 
 
 def parse_args():
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             if label != GameState.NO_PLAY:
                 # YOLO Object detection
                 balls = vb_object_detector.detect_balls(f)
-                vb_objects = vb_object_detector.detect_actions(f, exclude=('ball',))
+                vb_objects = vb_object_detector.detect_actions(f, exclude=('ball_detection',))
                 blocks = vb_objects['block']
                 sets = vb_objects['set']
                 spikes = vb_objects['spike']

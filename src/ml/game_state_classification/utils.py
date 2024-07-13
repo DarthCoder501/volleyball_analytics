@@ -11,8 +11,8 @@ from src.backend.app.api_interface import APIInterface
 from src.backend.app.enums.enums import GameState, ServiceType
 from src.utilities.utils import timeit, BoundingBox, ProjectLogger, state_summarize
 from src.backend.app.schemas import services, rallies, matches, series, videos
-from src.ml.yolo.volleyball_object_detector import VolleyBallObjectDetector
-from src.ml.video_mae.game_state.gamestate import GameStateClassifier
+from src.ml.volleyball_object_detector import VolleyBallObjectDetector
+from src.ml.game_state_classification.gamestate import GameStateClassifier
 
 
 class Manager:
@@ -83,10 +83,10 @@ class Manager:
             temp = frames[batch_size * i: batch_size * (i + 1)]
             if len(temp):
                 batch_balls = self.vb_object_detector.detect_balls(temp)
-                batch_vb_objects = self.vb_object_detector.detect_actions(temp, exclude='ball')
+                batch_vb_objects = self.vb_object_detector.detect_actions(temp, exclude='ball_detection')
                 batch_results = []
                 for balls, vb_objects in zip(batch_balls, batch_vb_objects):
-                    vb_objects['ball'] = balls
+                    vb_objects['ball_detection'] = balls
                     batch_results.append(vb_objects)
                 results.extend(batch_results)
         return results
@@ -300,7 +300,7 @@ class Manager:
         receives_js = {}
 
         for i, objects in enumerate(batch_vb_objects):
-            balls = [obj.to_xyxy for obj in objects['ball']]
+            balls = [obj.to_xyxy for obj in objects['ball_detection']]
             blocks = [obj.to_xyxy for obj in objects['block']]
             sets = [obj.to_xyxy for obj in objects['set']]
             spikes = [obj.to_xyxy for obj in objects['spike']]

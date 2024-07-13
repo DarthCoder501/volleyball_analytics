@@ -6,7 +6,7 @@ from tqdm import tqdm
 from pathlib import Path
 from argparse import ArgumentParser
 
-from ml.yolo.volleyball_object_detector import VolleyBallObjectDetector
+from src.ml.volleyball_object_detector import VolleyBallObjectDetector
 
 
 def config():
@@ -34,7 +34,7 @@ def config():
         default="/home/masoud/Desktop/projects/volleyball_analytics/runs/detect"
     )
     parser.add_argument(
-        "--court",
+        "--court_segmentation",
         type=str,
         default="/home/masoud/Desktop/projects/volleyball_analytics/conf/reference_pts.json"
     )
@@ -54,7 +54,7 @@ def config():
 
 if __name__ == '__main__':
     """
-    1. Draw ball and ball tracking history in 5-6 frames before...
+    1. Draw ball_detection and ball_detection tracking history in 5-6 frames before...
     2. Draw spiker-blocker-receiver-setter-Service ...
     """
     cfg = config()
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             if len(batch) == batch_size:
                 t1 = time()
                 batch_balls = detector.detect_balls(batch)
-                batch_vb_objects = detector.detect_actions(batch, exclude='ball')
+                batch_vb_objects = detector.detect_actions(batch, exclude='ball_detection')
 
                 for f, balls, vb_objects in zip(batch, batch_balls, batch_vb_objects):
                     blocks = vb_objects['block']
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             status, frame = cap.read()
             t1 = time()
             balls = detector.detect_balls(frame)
-            vb_objects = detector.detect_actions(frame, exclude='ball')
+            vb_objects = detector.detect_actions(frame, exclude='ball_detection')
             t2 = time()
             blocks = vb_objects['block']
             sets = vb_objects['set']

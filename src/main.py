@@ -14,7 +14,7 @@ from pathlib import Path
 from typing_extensions import List
 
 from src.backend.app.enums.enums import GameState
-from src.ml.video_mae.game_state.utils import Manager
+from src.ml.game_state_classification.utils import Manager
 
 
 def main():

@@ -1,3 +1,3 @@
-from .plot import sv_plot
+from .plot import SuperVisionPlot
 
-__all__ = 'sv_plot'
+__all__ = 'SuperVisionPlot'

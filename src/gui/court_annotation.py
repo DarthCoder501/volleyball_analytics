@@ -10,7 +10,7 @@ from mathutils.geometry import intersect_point_line
 from numpy._typing import NDArray
 from typing_extensions import Tuple
 
-from src.ml.yolo.court.court_segmentation import CourtSegmentor
+from src.ml.court_segmentation import CourtSegmentor
 
 
 class CourtAnnotator(object):
@@ -19,7 +19,7 @@ class CourtAnnotator(object):
         self._y = None
         cfg = {
             'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/court_segment/weights/best.pt',
-            "labels": {0: 'court'}
+            "labels": {0: 'court_segmentation'}
         }
         self.segmentor = CourtSegmentor(cfg=cfg)
         self.save_path = save_path
@@ -44,7 +44,7 @@ class CourtAnnotator(object):
         print(f"ANNOTS: {annots}")
         if annots is not None:
             print("USING PRE-ANNOTATED JSON")
-            (self.w_tl, self.h_top), (self.w_dl, self.h_down), (self.w_dr, _), (self.w_tr, _) = annots['court']
+            (self.w_tl, self.h_top), (self.w_dl, self.h_down), (self.w_dr, _), (self.w_tr, _) = annots['court_segmentation']
             self.net_top_left, self.net_down_left, self.net_down_right, self.net_top_right = annots['net']
         else:
             print("Annotation not found. USING AI TO DETECT COURT ....")
@@ -163,7 +163,7 @@ class CourtAnnotator(object):
 
     def ml_guided_corners(self, frame: NDArray):
         """
-        It assists us to find 4 corners of court based on the segmentation model output.
+        It assists us to find 4 corners of court_segmentation based on the segmentation model output.
         Args:
             frame:
 
@@ -368,7 +368,7 @@ class CourtAnnotator(object):
         if not self.save_file.is_file():
             out_dict = {
                 Path(self.filename).name: {
-                    "court": court_coords,
+                    "court_segmentation": court_coords,
                     "attack": att_line_coords,
                     "center": (self.left_center, self.right_center),
                     "net": net_coords
@@ -377,7 +377,7 @@ class CourtAnnotator(object):
         else:
             js = json.load(open(self.save_file.as_posix()))
             js[Path(self.filename).name] = {
-                "court": court_coords,
+                "court_segmentation": court_coords,
                 "attack": att_line_coords,
                 "center": (self.left_center, self.right_center),
                 "net": net_coords
@@ -392,7 +392,7 @@ if __name__ == '__main__':
     3. keep the previous frame numbers, so we can use another button to get to previous ones.
 
     UI:
-        1. insert 4 red points for the whole court annotation.
+        1. insert 4 red points for the whole court_segmentation annotation.
         2. insert 4 blue points for front zone annotation.
 
     After annotation:

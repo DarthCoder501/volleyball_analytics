@@ -8,9 +8,9 @@ from pathlib import Path
 import norfair
 from norfair import Detection, Tracker, OptimizedKalmanFilterFactory
 from argparse import ArgumentParser
-from src.ml.yolo.ball.ball_detection import BallSegmentor
-from src.ml.yolo.vb_action.action_detection import ActionDetector
-from src.ml.yolo.players.pose_estimation import PoseEstimator
+from src.ml.ball_detection.ball_detection import BallSegmentor
+from src.ml.action_detection.action_detection import ActionDetector
+from src.ml.player_detection.pose_estimation import PoseEstimator
 from src.utilities.utils import BoundingBox, KeyPointBox, Meta, CourtCoordinates
 
 DISTANCE_THRESHOLD_BBOX: float = 0.7

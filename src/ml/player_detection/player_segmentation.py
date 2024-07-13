@@ -46,7 +46,7 @@ class PlayerSegmentor:
     def filter(self, bboxes: List[BoundingBox], keep: int = None, by_bbox_size: bool = True, by_zone: bool = True):
         """
         filter the bounding boxes of people based on the size of bounding box,
-        and also whether their steps are in the court or not.
+        and also whether their steps are in the court_segmentation or not.
         Args:
             by_zone:
             bboxes:
@@ -57,7 +57,7 @@ class PlayerSegmentor:
 
         """
         if self.court is not None:
-            # Keep the players that their legs keypoint (x, y) are inside the polygon-shaped court ...
+            # Keep the player_detection that their legs keypoint (x, y) are inside the polygon-shaped court_segmentation ...
             if by_zone:
                 bboxes = [b for b in bboxes if
                           any([self.court.is_inside_main_zone(b.left_down),

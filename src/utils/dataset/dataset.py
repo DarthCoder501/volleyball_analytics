@@ -18,7 +18,7 @@ from typing_extensions import List, Dict, Tuple
 from albumentations.core.transforms_interface import DualTransform
 from .image_annotation import ImageAnnotations
 
-from src.utils import DatasetType, PlotType, BoundingBox, sv_plot
+from src.utils import DatasetType, BoxPlotType, BoundingBox, sv_plot
 
 
 # from src.utils.general import save_img_slice_and_labels
@@ -336,7 +336,7 @@ class DatasetManager:
                 self.image_annots[i].annotations[ii].label = substitution_dict[annot.label]
 
     @staticmethod
-    def plot_image_annot(image_annot: ImageAnnotations, plot_type=PlotType.Color) -> np.ndarray:
+    def plot_image_annot(image_annot: ImageAnnotations, plot_type=BoxPlotType.Color) -> np.ndarray:
         image = image_annot.get_image()
         bboxes = image_annot.annotations
         plot = sv_plot(image, bboxes, draw_label=True, draw_name=True, plot_type=plot_type)

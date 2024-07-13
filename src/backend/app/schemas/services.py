@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class ServiceCreateSchema(BaseModel):
     """
     serving_region: indicates the place that hitter is standing right before
-        tossing the ball.
+        tossing the ball_detection.
     end_frame: If we have the rally video with `rally_id`, then `end_frame` indicates the
         frame number where the model detected the endpoint of service.
     """

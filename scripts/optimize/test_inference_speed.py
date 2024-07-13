@@ -64,7 +64,7 @@ if __name__ == '__main__':
 ==========================================================================================================
 pytorch model | half
 
-0: 384x640 1 ball, 2 blocks, 1 spike, 39.2ms
+0: 384x640 1 ball_detection, 2 blocks, 1 spike, 39.2ms
 Speed: 2.5ms preprocess, 39.2ms inference, 159.5ms postprocess per image at shape (1, 3, 384, 640)
 
 0: 384x640 1 serve, 1.8ms
@@ -77,7 +77,7 @@ Speed: 0.8ms preprocess, 1.6ms inference, 0.4ms postprocess per image at shape (
 
 int8 |
 
-0: 384x640 1 ball, 2 blocks, 1 spike, 39.3ms
+0: 384x640 1 ball_detection, 2 blocks, 1 spike, 39.3ms
 Speed: 2.7ms preprocess, 39.3ms inference, 163.4ms postprocess per image at shape (1, 3, 384, 640)
 
 0: 384x640 1 serve, 1.9ms

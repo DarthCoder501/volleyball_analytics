@@ -15,4 +15,4 @@ test:  # test images (optional)
 
 # Classes
 names:
-  0: ball
+  0: ball_detection

@@ -16,7 +16,7 @@ from src.utilities.utils import Meta
 
 class CourtSegmentor:
     def __init__(self, cfg):
-        self.name = 'court'
+        self.name = 'court_segmentation'
         self.model = YOLO(cfg['weight'])
         self.labels = cfg['labels']
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
     cfg = {
         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/court_segment/weights/best.pt',
-        "labels": {0: 'court'}
+        "labels": {0: 'court_segmentation'}
     }
 
     court_segmentor = CourtSegmentor(cfg=cfg)

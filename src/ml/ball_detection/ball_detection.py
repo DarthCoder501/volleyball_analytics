@@ -5,7 +5,8 @@ import cv2
 from tqdm import tqdm
 from ultralytics import YOLO
 from numpy.typing import NDArray
-from src.utilities.utils import BoundingBox, Meta
+from src.utils import BoundingBox, SuperVisionPlot, BoxPlotType, KeyPointBox, KeyPointPlotType
+
 
 # weights = '/home/masoud/Desktop/projects/volleyball_analytics/weights/ball_segment/model2/weights/best.pt'
 
@@ -13,7 +14,7 @@ from src.utilities.utils import BoundingBox, Meta
 class BallSegmentor:
     def __init__(self, cfg: dict):
         self.model = YOLO(cfg['weight'])
-        self.labels = cfg['labels']
+        self.labels = {i: n for i, n in enumerate(self.model.names)}
 
     def predict(self, inputs: NDArray) -> List[BoundingBox]:
         outputs = self.model(inputs, verbose=False)
@@ -22,8 +23,7 @@ class BallSegmentor:
 
         results: List[BoundingBox] = []
         for box, conf in zip(boxes, confs):
-            # TODO: make it suitable for multi-class yolo.
-            b = BoundingBox(box, name='ball', conf=float(conf))
+            b = BoundingBox(box, name='ball', conf=float(conf), label=0)
             results.append(b)
         results.sort(key=lambda x: (x.conf, x.area), reverse=True)
         return results
@@ -44,16 +44,12 @@ class BallSegmentor:
         return results
 
     @staticmethod
-    def draw(input_frame: NDArray, bboxes: List[BoundingBox], use_ellipse: bool = False, use_marker=False,
-             color=Meta.green, use_bbox=True, use_title: bool = True):
-        for bb in bboxes:
-            if use_marker:
-                input_frame = bb.draw_marker(input_frame, color)
-            if use_ellipse:
-                input_frame = bb.draw_ellipse(input_frame, color)
-            if use_bbox:
-                input_frame = bb.draw_lines(input_frame, color, title=bb.name if use_title else '')
-        return input_frame
+    def draw(frame: NDArray, items: List[BoundingBox]):
+        if not len(items):
+            return frame
+
+        frame = SuperVisionPlot.bbox_plot(frame, items, plot_type=BoxPlotType.Corner)
+        return frame
 
 
 if __name__ == '__main__':
@@ -61,7 +57,7 @@ if __name__ == '__main__':
     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
     cfg = {
         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/runs/detect/train/weights/best.pt',
-        "labels": {0: 'ball'}
+        "labels": {0: 'ball_detection'}
     }
 
     ball_detector = BallSegmentor(cfg=cfg)

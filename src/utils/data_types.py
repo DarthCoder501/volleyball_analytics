@@ -7,7 +7,7 @@ class DatasetType(IntEnum):
     COCODatasetType = 2
 
 
-class PlotType(IntEnum):
+class BoxPlotType(IntEnum):
     Color = 1
     Triangle = 2
     Corner = 3
@@ -16,3 +16,11 @@ class PlotType(IntEnum):
     Ellipse = 6
     Bar = 7
     Round = 8
+
+
+class KeyPointPlotType(IntEnum):
+    Vertex = 0
+    Edge = 1
+    VertexLabel = 2
+    Ellipse = 3
+    Triangle = 4
