@@ -1,26 +1,20 @@
 # from abc import ABC
-from typing import List
-
-# import numpy as np
-from numpy.typing import NDArray
-from ultralytics import YOLO
-
-from src.utilities.utils import BoundingBox, Meta, CourtCoordinates
-from pathlib import Path
 import cv2
 from tqdm import tqdm
+from typing import List
+from pathlib import Path
+from ultralytics import YOLO
+from numpy.typing import NDArray
+
+from src.utils import BoundingBox, CourtCoordinates
 
 # weights = 'yolov8n.pt'
-
-__all__ = ['PlayerDetector']
 
 
 class PlayerDetector:
     def __init__(self, cfg, court_dict: dict = None):
         self.name = 'player'
         self.model = YOLO(cfg['weight'])
-        self.labels = cfg['labels']
-        self.court = None
         self.court = CourtCoordinates(court_dict) if court_dict is not None else None
 
     def predict(self, inputs: NDArray) -> list[BoundingBox]:
@@ -30,8 +24,7 @@ class PlayerDetector:
 
         detections: List[BoundingBox] = []
         for box, conf in zip(boxes, confs):
-            # TODO: make it suitable for multi-class yolo.
-            b = BoundingBox(box, name=self.name, conf=float(conf))
+            b = BoundingBox(box, name=self.name, conf=float(conf), label=0)
             detections.append(b)
         detections.sort(key=lambda x: (x.conf, x.area), reverse=True)
         return detections
@@ -45,8 +38,7 @@ class PlayerDetector:
 
             detections: List[BoundingBox] = []
             for box, conf in zip(boxes, confs):
-                # TODO: make it suitable for multi-class yolo.
-                b = BoundingBox(box, name='ball_detection', conf=float(conf))
+                b = BoundingBox(box, name=self.name, conf=float(conf), label=0)
                 detections.append(b)
             detections.sort(key=lambda x: (x.conf, x.area), reverse=True)
             results.append(detections)
@@ -67,14 +59,15 @@ class PlayerDetector:
 
         """
         if self.court is not None:
-            # Keep the player_detection that their legs keypoint (x, y) are inside the polygon-shaped court_segmentation ...
+            # Keep the player_detection that their legs keypoint (x, y) are
+            # inside the polygon-shaped court_segmentation ...
             if by_zone:
                 bboxes = [b for b in bboxes if
-                          any([self.court.is_inside_main_zone(b.left_down),
-                               self.court.is_inside_main_zone(b.right_down),
+                          any([self.court.is_inside_main_zone(b.down_left),
+                               self.court.is_inside_main_zone(b.down_right),
                                self.court.is_inside_main_zone(b.center),
-                               self.court.is_inside_front_zone(b.left_down),
-                               self.court.is_inside_front_zone(b.right_down)])]
+                               self.court.is_inside_front_zone(b.down_left),
+                               self.court.is_inside_front_zone(b.down_right)])]
         if by_bbox_size:
             bboxes.sort(key=lambda x: (x.conf, x.area))
         else:

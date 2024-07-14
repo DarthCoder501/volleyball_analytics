@@ -7,7 +7,6 @@ import cv2
 from pathlib import Path
 from tqdm import tqdm
 from ultralytics import YOLO
-from src.utilities.utils import Meta
 
 
 # weights = 'yolov8n-seg.pt'
@@ -18,7 +17,6 @@ class CourtSegmentor:
     def __init__(self, cfg):
         self.name = 'court_segmentation'
         self.model = YOLO(cfg['weight'])
-        self.labels = cfg['labels']
 
     def predict(self, frame: NDArray) -> List[List[int]]:
         results = self.model(frame, verbose=False, classes=0)
@@ -56,7 +54,7 @@ class CourtSegmentor:
         return top_left, down_left, down_right, top_right
 
     @staticmethod
-    def draw(frame: NDArray, points: list, color=Meta.green):
+    def draw(frame: NDArray, points: list, color=(255, 0, 255)):
         if len(points):
             points = np.array(points)
             frame = cv2.fillPoly(frame, [points], color)
@@ -67,8 +65,7 @@ if __name__ == '__main__':
     video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/train/3.mp4'
     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
     cfg = {
-        'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/court_segment/weights/best.pt',
-        "labels": {0: 'court_segmentation'}
+        'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/court_segment/weights/best.pt'
     }
 
     court_segmentor = CourtSegmentor(cfg=cfg)

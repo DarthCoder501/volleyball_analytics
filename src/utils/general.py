@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from time import time
 
+from supervision.draw.color import ROBOFLOW_COLOR_PALETTE
 from tqdm import tqdm
 from pathlib import Path
 from functools import wraps
@@ -71,3 +72,61 @@ class CourtCoordinates:
         result = cv2.pointPolygonTest(self.front, point, False)
         return result > 0
 
+
+def get_color(name):
+    colormap = ROBOFLOW_COLOR_PALETTE
+    match name:
+        case 'ball':
+            color = colormap[0]
+        case 'person':
+            color = colormap[1]
+        case 'spike':
+            color = colormap[2]
+        case 'block':
+            color = colormap[3]
+        case 'set':
+            color = colormap[4]
+        case 'receive':
+            color = colormap[5]
+        case 'serve':
+            color = colormap[6]
+        case 'court':
+            color = colormap[7]
+        case 'team_up':
+            color = colormap[8]
+        case 'team_down':
+            color = colormap[9]
+        case _:
+            print(f"item name not included here: {name}")
+            color = colormap[12]
+
+    return color
+
+
+def get_class_id(name):
+    match name:
+        case 'ball':
+            index = 0
+        case 'person':
+            index = 1
+        case 'spike':
+            index = 2
+        case 'block':
+            index = 3
+        case 'set':
+            index = 4
+        case 'receive':
+            index = 5
+        case 'serve':
+            index = 6
+        case 'court':
+            index = 7
+        case 'team_up':
+            index = 8
+        case 'team_down':
+            index = 9
+        case _:
+            print(f"item name not included here: {name}")
+            index = 12
+
+    return index

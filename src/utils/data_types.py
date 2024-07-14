@@ -24,3 +24,17 @@ class KeyPointPlotType(IntEnum):
     VertexLabel = 2
     Ellipse = 3
     Triangle = 4
+
+
+class ObjectColormap(IntEnum):
+    Ball = 0
+    Team1 = 1
+    Team2 = 2
+    Spike = 3
+    Block = 4
+    Set = 5
+    Receive = 6
+    Serve = 7
+    Court = 8
+    Person = 9
+

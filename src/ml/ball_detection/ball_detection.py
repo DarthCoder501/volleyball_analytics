@@ -8,9 +8,6 @@ from numpy.typing import NDArray
 from src.utils import BoundingBox, SuperVisionPlot, BoxPlotType, KeyPointBox, KeyPointPlotType
 
 
-# weights = '/home/masoud/Desktop/projects/volleyball_analytics/weights/ball_segment/model2/weights/best.pt'
-
-
 class BallSegmentor:
     def __init__(self, cfg: dict):
         self.model = YOLO(cfg['weight'])
@@ -37,7 +34,7 @@ class BallSegmentor:
 
             detections: List[BoundingBox] = []
             for box, conf in zip(boxes, confs):
-                b = BoundingBox(box, name='ball', conf=float(conf))
+                b = BoundingBox(box, name='ball', conf=float(conf), label=0)
                 detections.append(b)
             detections.sort(key=lambda x: (x.conf, x.area), reverse=True)
             results.append(detections)
@@ -55,9 +52,9 @@ class BallSegmentor:
 if __name__ == '__main__':
     video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/train/nian1.mp4'
     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
+
     cfg = {
         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/runs/detect/train/weights/best.pt',
-        "labels": {0: 'ball_detection'}
     }
 
     ball_detector = BallSegmentor(cfg=cfg)
