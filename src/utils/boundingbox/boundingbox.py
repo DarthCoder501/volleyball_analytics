@@ -102,26 +102,17 @@ class BoundingBox:
     def to_numpy(self) -> NDArray:
         return np.array([self.x1, self.y1, self.x2, self.y2, self.conf])
 
-    def to_yolo(self, img_width, img_height, seg_type=False, current_type=DatasetType.YoloDatasetType) -> str:
+    def to_yolo(self, img_width, img_height, current_type=DatasetType.YoloDatasetType) -> str:
         label = self.label if current_type == DatasetType.YoloDatasetType else self.label - 1
-        if seg_type:
-            img_dimensions = np.array([img_width, img_height])
-            tl = (np.array(self.top_left) / img_dimensions).tolist()
-            dl = (np.array(self.down_left) / img_dimensions).tolist()
-            dr = (np.array(self.down_right) / img_dimensions).tolist()
-            tr = (np.array(self.top_right) / img_dimensions).tolist()
-            return f"{label} {tl[0]} {tl[1]} {dl[0]} {dl[1]} {dr[0]} {dr[1]} {tr[0]} {tr[1]}"
-        else:
-            x_cen = self.x1 + (self.width / 2)
-            y_cen = self.y1 + (self.height / 2)
-            # x_cen, y_cen = self.center
-            x_cen = x_cen / img_width
-            y_cen = y_cen / img_height
-            bbox_width = self.width / img_width
-            bbox_height = self.height / img_height
-            return f"{label} {x_cen} {y_cen} {bbox_width} {bbox_height}"
+        x_cen = self.x1 + (self.width / 2)
+        y_cen = self.y1 + (self.height / 2)
+        x_cen = x_cen / img_width
+        y_cen = y_cen / img_height
+        bbox_width = self.width / img_width
+        bbox_height = self.height / img_height
+        return f"{label} {x_cen} {y_cen} {bbox_width} {bbox_height}"
 
-    def to_coco(self, image_id: int) -> Dict[str, int | list]:
+    def to_coco(self, image_id: int) -> dict:
         return {
             'iscrowd': 0,
             "bbox_mode": 0,

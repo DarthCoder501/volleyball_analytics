@@ -3,64 +3,27 @@ import cv2
 import json
 import yaml
 import shutil
-
 import numpy as np
-import oyaml as yml
-import pandas as pd
 from tqdm import tqdm
-import itertools as it
 from pathlib import Path
 import albumentations as A
-from natsort import natsorted
 from pycocotools.coco import COCO
 from rich.progress import track
-from typing_extensions import List, Dict, Tuple
+from typing_extensions import List, Dict
 from albumentations.core.transforms_interface import DualTransform
 from .image_annotation import ImageAnnotations
 
-from src.utils import DatasetType, BoxPlotType, BoundingBox, sv_plot
-
-
-# from src.utils.general import save_img_slice_and_labels
+from src.utils import DatasetType, BoxPlotType, BoundingBox
 
 
 class DatasetManager:
-    """
-        Be able to initiate data from
-            1. Yolo Directory/yaml file ?
-            2. COCO json
-            3. ImageAnnot annotations
-
-        Be able to output:
-            1. COCO json and images
-            2. Augment data
-            3. CVAT output.
-            4. Yolo data
-            5. Create yaml file based on clusters.
-            6. Create json file for COCO dataset.
-
-
-        Other utilities:
-            1. Handle images
-            2. Convert to different types
-            3. Slice images and bounding boxes.
-            4. Handle segmentation/detection
-            5. Generate masks
-            6. Slice images/masks too.
-            7. Augment images with different techniques
-            8. Plot images/bboxes/masks.
-            9. Use multithreading (joblib)
-            10. Add a function that triggers the image/annotation loading (use it
-                only when it is required to convert datasets to each other, and nothing else...
-            11. Before image/annots loading, it can produce the plots.
-    """
 
     def __init__(self):
         self.image_annots: List[ImageAnnotations] = []
         self.dataset_type: int = DatasetType.NoValue
         self.categories: List[Dict] = []
-        self.annot_id = 1
-        self.image_id = 1
+        self.annot_id: int | None = None
+        self.image_id: int | None = None
 
     @staticmethod
     def create_image_annot(image: str | Path, bboxes: List[BoundingBox]):
@@ -76,7 +39,7 @@ class DatasetManager:
         self.image_id = 1
 
     @staticmethod
-    def get_yolo_by_name(image_path, yaml_file) -> ImageAnnotations | None:
+    def get_yolo_by_name(image_path: str, yaml_file: str) -> ImageAnnotations | None:
         yaml_data = yaml.load(open(yaml_file), Loader=yaml.SafeLoader)
         names = yaml_data['names']
 
@@ -141,7 +104,7 @@ class DatasetManager:
             self.image_annots.append(img_annot)
         self.categories = categories
 
-    def from_coco_json(self, coco_json: str, coco_image_path: str, K=None):
+    def from_coco_json(self, coco_json: str, coco_image_path: str):
         self.dataset_type = DatasetType.COCODatasetType
         coco = COCO(coco_json)
         image_annots = []
@@ -160,9 +123,7 @@ class DatasetManager:
                 self.annot_id += 1
                 img_annot.add_annotation(bbox)
             image_annots.append(img_annot)
-            if K is not None:
-                if k >= K:
-                    break
+
         self.image_annots.extend(image_annots)
 
     def from_image_annots(self, image_annots: List[ImageAnnotations], categories: List[dict],
@@ -180,77 +141,57 @@ class DatasetManager:
     def set_categories(self, categories: dict):
         self.categories = categories
 
-    def to_yaml(self):
-        outputs = {'names': []}
-        for item in self.categories:
-            id_ = item['id']
-            category = item['name']
-            outputs['names'][id_] = category
-        return outputs
-
-    def to_coco(self, output_path: str, to_eval=False):
+    def to_coco(self, output_path: str):
         images = []
         annotations = []
         img_path = Path(output_path)
         img_path.mkdir(exist_ok=True)
-        if to_eval:
-            for i, img_annot in enumerate(track(self.image_annots, description='Export to coco eval: ')):
-                if self.dataset_type == DatasetType.YoloDatasetType:
-                    _, annotations_info = img_annot.to_coco_fmt(update_labels=True, coco_eval=True)
-                elif self.dataset_type == DatasetType.COCODatasetType:
-                    _, annotations_info = img_annot.to_coco_fmt(update_labels=False, coco_eval=True)
-                else:
-                    raise ValueError("self.dataset_type can be either the type of yolo or coco.")
-                annotations.extend(annotations_info)
 
-            output = annotations.copy()
-            output.sort(key=lambda x: x['score'])
-        else:
-            for i, img_annot in enumerate(track(self.image_annots, description='Export to coco: ')):
-                if not os.path.isfile(img_path / img_annot.file_name.name):
-                    shutil.copy2(img_annot.file_name.as_posix(), img_path / img_annot.file_name.name)
-                new_img_annot = ImageAnnotations(image_id=img_annot.image_id, file_name=img_path / img_annot.file_name.name)
-                new_img_annot.annotations = img_annot.annotations
-                if self.dataset_type == DatasetType.YoloDatasetType:
-                    img_info, annot_info = new_img_annot.to_coco_fmt(update_labels=True)
-                elif self.dataset_type == DatasetType.COCODatasetType:
-                    img_info, annot_info = new_img_annot.to_coco_fmt(update_labels=False)
-                else:
-                    raise ValueError("self.dataset_type can be either the type of yolo or coco.")
-                images.append(img_info)
-                annotations.extend(annot_info)
-
+        for i, img_annot in enumerate(track(self.image_annots, description='Export to coco: ')):
+            if not os.path.isfile(img_path / img_annot.file_name.name):
+                shutil.copy2(img_annot.file_name.as_posix(), img_path / img_annot.file_name.name)
+            new_img_annot = ImageAnnotations(image_id=img_annot.image_id, file_name=img_path / img_annot.file_name.name)
+            new_img_annot.annotations = img_annot.annotations
             if self.dataset_type == DatasetType.YoloDatasetType:
-                att = [
-                    {
-                        "name": "text",
-                        "mutable": True,
-                        "input_type": "text",
-                        "values": [
-                            ""
-                        ]
-                    },
-                    {
-                        "name": "conf",
-                        "mutable": True,
-                        "input_type": "number",
-                        "values": [
-                            "0;100;.01"
-                        ]
-                    }
-                ]
-                categories = [{'id': cat['id'] + 1, 'name': cat['name'], "attributes": att} for cat in self.categories]
-
+                img_info, annot_info = new_img_annot.to_coco_fmt(update_labels=True)
+            elif self.dataset_type == DatasetType.COCODatasetType:
+                img_info, annot_info = new_img_annot.to_coco_fmt(update_labels=False)
             else:
-                categories = self.categories
+                raise ValueError("self.dataset_type can be either the type of yolo or coco.")
+            images.append(img_info)
+            annotations.extend(annot_info)
 
-            output = {
-                'annotations': annotations,
-                'images': images,
-                'categories': categories,
-                'info': {},
-                'licenses': []
-            }
+        if self.dataset_type == DatasetType.YoloDatasetType:
+            att = [
+                {
+                    "name": "text",
+                    "mutable": True,
+                    "input_type": "text",
+                    "values": [
+                        ""
+                    ]
+                },
+                {
+                    "name": "conf",
+                    "mutable": True,
+                    "input_type": "number",
+                    "values": [
+                        "0;100;.01"
+                    ]
+                }
+            ]
+            categories = [{'id': cat['id'] + 1, 'name': cat['name'], "attributes": att} for cat in self.categories]
+
+        else:
+            categories = self.categories
+
+        output = {
+            'annotations': annotations,
+            'images': images,
+            'categories': categories,
+            'info': {},
+            'licenses': []
+        }
         output_file = os.path.join(output_path, 'annotations.json')
         with open(output_file, 'w') as file:
             json.dump(output, file, sort_keys=True, indent=2)

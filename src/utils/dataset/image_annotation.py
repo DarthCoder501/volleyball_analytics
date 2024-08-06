@@ -1,5 +1,9 @@
+from typing import Tuple, Dict
+
 import cv2
 from pathlib import Path
+
+from numpy.typing import NDArray
 from typing_extensions import List
 from src.utils import BoundingBox, DatasetType
 
@@ -15,15 +19,15 @@ class ImageAnnotations(object):
              plot if you want
     """
 
-    def __init__(self, image_id, file_name: Path):
-        self.image_id = image_id
-        self.file_name = file_name
-        image = self.get_image()
+    def __init__(self, image_id: int | None, file_name: Path):
+        self.image_id: int = image_id
+        self.file_name: Path = file_name
+        image: NDArray = self.get_image()
         self.height, self.width, _ = image.shape
         self.annotations: List[BoundingBox] = []
         del image
 
-    def get_image(self):
+    def get_image(self) -> NDArray:
         return cv2.imread(self.file_name.as_posix())
 
     def add_annotation(self, bbox: BoundingBox):
@@ -41,7 +45,7 @@ class ImageAnnotations(object):
     def __repr__(self):
         return f"""(ImgAnnot: file_name={self.file_name}, image_id={self.image_id}, n_annotations={len(self)})"""
 
-    def to_coco_fmt(self, update_labels: bool = False, coco_eval=False) -> tuple:
+    def to_coco_fmt(self, update_labels: bool = False) -> tuple:
         """
         Prepares the image details and the annotations on an image.
         Notes:
@@ -56,25 +60,15 @@ class ImageAnnotations(object):
 
         annotations_info = []
         for annot in self.annotations:
-            if coco_eval:
-                coco_info = annot.to_coco_eval(image_id=self.image_id)
-                coco_info['category_id'] = coco_info['category_id'] \
-                    if not update_labels else coco_info['category_id'] + 1
-            else:
-                coco_info = annot.to_coco(image_id=self.image_id)
-                cat_id = annot.label if not update_labels else annot.label + 1
-                coco_info['category_id'] = cat_id
-                coco_info['attributes'] = {}
-                coco_info['attributes']["conf"] = annot.conf
-                for attr_key, attr_value in annot.attributes.items():
-                    coco_info['attributes'][attr_key] = attr_value
-            # if rle_format:
-            #     from fiftyone.utils.coco import mask_utils
-            #     segmentation_polygons = coco_info['segmentation']
-            #     rle_masks = mask_utils.frPyObjects(segmentation_polygons, self.height, self.width)
-            #     rle_encoded_masks = mask_utils.merge(rle_masks)
-            #     coco_info['segmentation'] = str(rle_encoded_masks)
+            coco_info = annot.to_coco(image_id=self.image_id)
+            cat_id = annot.label if not update_labels else annot.label + 1
+            coco_info['category_id'] = cat_id
+            coco_info['attributes'] = {}
+            coco_info['attributes']["conf"] = annot.conf
+            for attr_key, attr_value in annot.attributes.items():
+                coco_info['attributes'][attr_key] = attr_value
             annotations_info.append(coco_info)
+
         image_info = {
             'id': self.image_id,
             'width': self.width,
@@ -83,22 +77,10 @@ class ImageAnnotations(object):
         }
         return image_info, annotations_info
 
-    @staticmethod
-    def get_polygon_bbox(polygon: List[int | float]):
-        """Calculate the bounding box of a polygon."""
-        min_x = min(polygon[::2])
-        max_x = max(polygon[::2])
-        min_y = min(polygon[1::2])
-        max_y = max(polygon[1::2])
-        width = abs(max_x - min_x)
-        height = abs(max_y - min_y)
-
-        return width, height
-
-    def to_yolo_fmt(self, seg_type: bool = False, current_type: int = DatasetType.YoloDatasetType) -> str:
+    def to_yolo_fmt(self, current_type: int = DatasetType.YoloDatasetType) -> str:
         txt = ""
         for i, annot in enumerate(self.annotations):
-            t = annot.to_yolo(self.width, self.height, seg_type=seg_type, current_type=current_type)
+            t = annot.to_yolo(self.width, self.height, current_type=current_type)
             if i != len(self.annotations) - 1:
                 txt = txt + t + '\n'
             else:
