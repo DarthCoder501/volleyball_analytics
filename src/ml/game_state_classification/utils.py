@@ -63,7 +63,7 @@ class Manager:
         """
         # TODO: Update the state detection to operate in more complex situations like 5 states.
         current_state = self.state_detector.predict(frames)
-        self._set_current_state(current_state)
+        self.set_current_state(current_state)
 
     @timeit
     def predict_objects(self, frames: List[np.ndarray]) -> List[Dict[str, List[BoundingBox]]]:
@@ -125,7 +125,7 @@ class Manager:
         """
         return Path(self.rally_base_dir) / f'{video_type}_{self.rally_counter}_start_frame_{fno}.mp4'
 
-    def _set_current_state(self, curr_state: int):
+    def set_current_state(self, curr_state: int):
         """substitute the 3 consecutive states after getting the current
          state.(each state consists of 30 frames.)
 

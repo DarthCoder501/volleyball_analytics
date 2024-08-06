@@ -16,15 +16,15 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 class GameStateClassifier:
     def __init__(self, cfg: dict):
-        ckpt = cfg['weight']
+        ckpt: str = cfg['weight']
         print("Initializing model and transforms...")
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.feature_extractor = VideoMAEImageProcessor.from_pretrained(ckpt)
         self.model = VideoMAEForVideoClassification.from_pretrained(ckpt).to(self.device)
-        self.labels = list(self.model.config.label2id.keys())
+        self.labels: list = list(self.model.config.label2id.keys())
         sample_size = self.model.config.num_frames
         mean = self.feature_extractor.image_mean
-        resize_to = 224
+        resize_to: int = 224
         std = self.feature_extractor.image_std
         self.label2state = {'service': 1, 'play': 2, 'no-play': 3}
         self.state2label = {1: 'service', 2: 'play', 3: 'no-play'}
