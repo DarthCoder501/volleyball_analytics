@@ -6,7 +6,8 @@ from pathlib import Path
 from ultralytics import YOLO
 from numpy.typing import NDArray
 
-from src.utils import BoundingBox, CourtCoordinates
+from src.utils import BoundingBox, CourtCoordinates, SuperVisionPlot, BoxPlotType
+
 
 # weights = 'yolov8n.pt'
 
@@ -76,16 +77,12 @@ class PlayerDetector:
         return bboxes[:keep] if keep is not None else bboxes
 
     @staticmethod
-    def draw(frame: NDArray, bboxes: List[BoundingBox], use_marker=False, use_ellipse: bool = True,
-             use_bbox: bool = True, color: tuple = Meta.green, use_title: bool = True):
-        for bb in bboxes:
-            if use_marker:
-                frame = bb.draw_marker(frame, color)
-            if use_ellipse:
-                frame = bb.draw_ellipse(frame, color)
-            if use_bbox:
-                frame = bb.draw_lines(frame, color, title=bb.name if use_title else '')
-        return frame
+    def draw(input_frame: NDArray, items: List[BoundingBox]):
+        if not len(items):
+            return input_frame
+
+        input_frame = SuperVisionPlot.bbox_plot(input_frame, items, plot_type=BoxPlotType.Corner)
+        return input_frame
 
 
 if __name__ == '__main__':

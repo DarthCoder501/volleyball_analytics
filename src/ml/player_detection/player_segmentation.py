@@ -2,21 +2,23 @@ from typing import List
 from ultralytics import YOLO
 from numpy.typing import NDArray
 
-from src.utilities.utils import BoundingBox, Meta, CourtCoordinates
+from src.utils import BoundingBox, CourtCoordinates
 
 # weights = 'yolov8n-seg.pt'
 __all__ = ['PlayerSegmentor']
+
+from src.utils import SuperVisionPlot, KeyPointBox, BoxPlotType, KeyPointPlotType
 
 
 class PlayerSegmentor:
     def __init__(self, cfg, court_dict: dict = None):
         self.name = 'player'
         self.model = YOLO(cfg['weight'])
-        self.labels = cfg['labels']
+        self.labels = {i: n for i, n in enumerate(self.model.names)}
         self.court = CourtCoordinates(court_dict) if court_dict is not None else None
 
-    def predict(self, frame: NDArray) -> list[BoundingBox]:
-        results = self.model(frame, verbose=False, classes=0)
+    def predict(self, input_frame: NDArray) -> list[BoundingBox]:
+        results = self.model(input_frame, verbose=False, classes=0)
         confs = results[0].boxes.conf.cpu().detach().numpy().tolist()
         boxes = results[0].boxes.xyxy.cpu().detach().numpy().tolist()
 
@@ -28,8 +30,8 @@ class PlayerSegmentor:
         detections.sort(key=lambda x: (x.conf, x.area), reverse=True)
         return detections
 
-    def batch_predict(self, frame: List[NDArray]) -> list[List[BoundingBox]]:
-        outputs = self.model(frame, verbose=False, classes=0)
+    def batch_predict(self, input_frame: List[NDArray]) -> list[List[BoundingBox]]:
+        outputs = self.model(input_frame, verbose=False, classes=0)
         results = []
         for output in outputs:
             confs = output.boxes.conf.cpu().detach().numpy().tolist()
@@ -57,14 +59,15 @@ class PlayerSegmentor:
 
         """
         if self.court is not None:
-            # Keep the player_detection that their legs keypoint (x, y) are inside the polygon-shaped court_segmentation ...
+            # Keep the player_detection that their legs keypoint (x, y)
+            # are inside the polygon-shaped court_segmentation ...
             if by_zone:
                 bboxes = [b for b in bboxes if
-                          any([self.court.is_inside_main_zone(b.left_down),
-                               self.court.is_inside_main_zone(b.right_down),
+                          any([self.court.is_inside_main_zone(b.down_left),
+                               self.court.is_inside_main_zone(b.down_right),
                                self.court.is_inside_main_zone(b.center),
-                               self.court.is_inside_front_zone(b.left_down),
-                               self.court.is_inside_front_zone(b.right_down)])]
+                               self.court.is_inside_front_zone(b.down_left),
+                               self.court.is_inside_front_zone(b.down_right)])]
         if by_bbox_size:
             bboxes.sort(key=lambda x: (x.conf, x.area))
         else:
@@ -73,13 +76,13 @@ class PlayerSegmentor:
         return bboxes[:keep] if keep is not None else bboxes
 
     @staticmethod
-    def draw(frame: NDArray, bboxes: List[BoundingBox], use_ellipse: bool = False, use_marker=False, color=Meta.green,
-             use_bbox=True, use_title: bool = True):
-        for bb in bboxes:
-            if use_marker:
-                frame = bb.draw_marker(frame, color)
-            if use_ellipse:
-                frame = bb.draw_ellipse(frame, color)
-            if use_bbox:
-                frame = bb.draw_lines(frame, color, title=bb.name if use_title else '')
-        return frame
+    def draw(input_frame: NDArray, items: List[BoundingBox | KeyPointBox]):
+        if not len(items):
+            return input_frame
+
+        if isinstance(items[0], BoundingBox):
+            input_frame = SuperVisionPlot.bbox_plot(input_frame, items, plot_type=BoxPlotType.Corner)
+        else:
+            input_frame = SuperVisionPlot.keypoint_plot(input_frame, items, plot_type=KeyPointPlotType.Vertex)
+
+        return input_frame

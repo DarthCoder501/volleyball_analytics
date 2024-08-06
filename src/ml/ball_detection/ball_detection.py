@@ -1,8 +1,4 @@
-from pathlib import Path
 from typing import List
-
-import cv2
-from tqdm import tqdm
 from ultralytics import YOLO
 from numpy.typing import NDArray
 from src.utils import BoundingBox, SuperVisionPlot, BoxPlotType, KeyPointBox, KeyPointPlotType
@@ -41,41 +37,44 @@ class BallSegmentor:
         return results
 
     @staticmethod
-    def draw(frame: NDArray, items: List[BoundingBox]):
+    def draw(input_frame: NDArray, items: List[BoundingBox]):
         if not len(items):
-            return frame
+            return input_frame
 
-        frame = SuperVisionPlot.bbox_plot(frame, items, plot_type=BoxPlotType.Corner)
-        return frame
+        input_frame = SuperVisionPlot.bbox_plot(input_frame, items, plot_type=BoxPlotType.Corner)
+        return input_frame
 
 
-if __name__ == '__main__':
-    video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/train/nian1.mp4'
-    output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
-
-    cfg = {
-        'weight': '/home/masoud/Desktop/projects/volleyball_analytics/runs/detect/train/weights/best.pt',
-    }
-
-    ball_detector = BallSegmentor(cfg=cfg)
-    cap = cv2.VideoCapture(video)
-    assert cap.isOpened()
-
-    w, h, fps, _, n_frames = [int(cap.get(i)) for i in range(3, 8)]
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    output_file = Path(output) / (Path(video).stem + '__NEW_BALL_DET.mp4')
-    writer = cv2.VideoWriter(output_file.as_posix(), fourcc, fps, (w, h))
-
-    for fno in tqdm(list(range(n_frames))):
-        cap.set(1, fno)
-        status, frame = cap.read()
-        bboxes = ball_detector.predict(frame)
-        frame = ball_detector.draw(frame, bboxes)
-        if fno > 1500:
-            break
-        writer.write(frame)
-
-    cap.release()
-    writer.release()
-    # cv2.destroyAllWindows()
-    print(f'saved results in {output_file}')
+# if __name__ == '__main__':
+#     import cv2
+#     from tqdm import tqdm
+#     from pathlib import Path
+#     video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/train/nian1.mp4'
+#     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/DEMO'
+#
+#     cfg = {
+#         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/runs/detect/train/weights/best.pt',
+#     }
+#
+#     ball_detector = BallSegmentor(cfg=cfg)
+#     cap = cv2.VideoCapture(video)
+#     assert cap.isOpened()
+#
+#     w, h, fps, _, n_frames = [int(cap.get(i)) for i in range(3, 8)]
+#     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+#     output_file = Path(output) / (Path(video).stem + '__NEW_BALL_DET.mp4')
+#     writer = cv2.VideoWriter(output_file.as_posix(), fourcc, fps, (w, h))
+#
+#     for fno in tqdm(list(range(n_frames))):
+#         cap.set(1, fno)
+#         status, frame = cap.read()
+#         bboxes = ball_detector.predict(frame)
+#         frame = ball_detector.draw(frame, bboxes)
+#         if fno > 1500:
+#             break
+#         writer.write(frame)
+#
+#     cap.release()
+#     writer.release()
+#     # cv2.destroyAllWindows()
+#     print(f'saved results in {output_file}')

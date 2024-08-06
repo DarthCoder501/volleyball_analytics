@@ -76,7 +76,8 @@ class SuperVisionPlot:
         return image
 
     @staticmethod
-    def keypoint_plot(image: NDArray, key_points: List[KeyPointBox], plot_type: int = KeyPointPlotType.VertexLabel):
+    def keypoint_plot(image: NDArray, key_points: List[KeyPointBox],
+                      plot_type: int = KeyPointPlotType.VertexLabel) -> NDArray:
         if not len(key_points):
             return image
         c = sv.ColorPalette.DEFAULT

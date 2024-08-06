@@ -1,10 +1,10 @@
 from typing import List, Tuple
 
 import numpy as np
-import yaml
+# import yaml
 import json
 from numpy.typing import NDArray
-from yaml.loader import SafeLoader
+# from yaml.loader import SafeLoader
 
 from src.utils import BoundingBox, KeyPointBox, KeyPointPlotType, BoxPlotType, SuperVisionPlot
 from src.ml.ball_detection import BallSegmentor
@@ -47,7 +47,7 @@ class VolleyBallObjectDetector:
         return self.pose_estimator.batch_predict(inputs=inputs)
 
     def segment_players(self, inputs: NDArray | List[NDArray]):
-        return self.player_detector.predict(frame=inputs)
+        return self.player_detector.predict(input_frame=inputs)
 
     @staticmethod
     def keep(bboxes: List[BoundingBox], to_keep: List[str] | Tuple[str] | str) -> List[BoundingBox]:
@@ -79,18 +79,18 @@ class VolleyBallObjectDetector:
         image = SuperVisionPlot.keypoint_plot(image, key_points=[kp for kp in bboxes if isinstance(kp, KeyPointBox)],
                                               plot_type=kp_plot_type)
 
-        image = self.action_detector.draw(frame=image, items=bboxes)
+        image = self.action_detector.draw(input_frame=image, items=bboxes)
         return image
 
 
-if __name__ == '__main__':
-    config_file = '/home/masoud/Desktop/projects/volleyball_analytics/conf/ml_models.yaml'
-    setup = '/home/masoud/Desktop/projects/volleyball_analytics/conf/setup.yaml'
-    court_json = '/home/masoud/Desktop/projects/volleyball_analytics/conf/reference_pts.json'
-    video_name = "22.mp4"
-
-    cfg: dict = yaml.load(open(config_file), Loader=SafeLoader)
-    cfg2: dict = yaml.load(open(setup), Loader=SafeLoader)
-    cfg.update(cfg2)
-
-    vb_detector = VolleyBallObjectDetector(cfg, video_name)
+# if __name__ == '__main__':
+#     config_file = '/home/masoud/Desktop/projects/volleyball_analytics/conf/ml_models.yaml'
+#     setup = '/home/masoud/Desktop/projects/volleyball_analytics/conf/setup.yaml'
+#     court_json = '/home/masoud/Desktop/projects/volleyball_analytics/conf/reference_pts.json'
+#     video_name = "22.mp4"
+#
+#     cfg: dict = yaml.load(open(config_file), Loader=SafeLoader)
+#     cfg2: dict = yaml.load(open(setup), Loader=SafeLoader)
+#     cfg.update(cfg2)
+#
+#     vb_detector = VolleyBallObjectDetector(cfg, video_name)

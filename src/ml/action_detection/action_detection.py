@@ -1,8 +1,4 @@
-import os
-import cv2
-from tqdm import tqdm
 from typing import List
-from pathlib import Path
 from ultralytics import YOLO
 from numpy.typing import NDArray
 
@@ -53,43 +49,48 @@ class ActionDetector:
         return [bbox for bbox in bboxes if bbox.label != label]
 
     @staticmethod
-    def draw(frame: NDArray, items: List[BoundingBox | KeyPointBox]):
+    def draw(input_frame: NDArray, items: List[BoundingBox | KeyPointBox]):
         if not len(items):
-            return frame
+            return input_frame
 
         if isinstance(items[0], BoundingBox):
-            frame = SuperVisionPlot.bbox_plot(frame, items, plot_type=BoxPlotType.Corner)
+            input_frame = SuperVisionPlot.bbox_plot(input_frame, items, plot_type=BoxPlotType.Corner)
         else:
-            frame = SuperVisionPlot.keypoint_plot(frame, items, plot_type=KeyPointPlotType.Vertex)
+            input_frame = SuperVisionPlot.keypoint_plot(input_frame, items, plot_type=KeyPointPlotType.Vertex)
 
-        return frame
+        return input_frame
 
 
-if __name__ == '__main__':
-    video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/test/videos/11_short.mp4'
-    output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/inference/det'
-    os.makedirs(output, exist_ok=True)
-    cfg = {
-        'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/vb_actions_6_class/model1/weights/best.pt'
-    }
-
-    action_detector = ActionDetector(cfg=cfg)
-    cap = cv2.VideoCapture(video)
-    assert cap.isOpened()
-
-    w, h, fps, _, n_frames = [int(cap.get(i)) for i in range(3, 8)]
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    output_file = Path(output) / (Path(video).stem + '_output.mp4')
-    writer = cv2.VideoWriter(output_file.as_posix(), fourcc, fps, (w, h))
-
-    for fno in tqdm(list(range(n_frames))):
-        cap.set(1, fno)
-        status, frame = cap.read()
-        bboxes = action_detector.predict(frame)
-        frame = action_detector.draw(frame, bboxes)
-        writer.write(frame)
-
-    cap.release()
-    writer.release()
-    cv2.destroyAllWindows()
-    print(f'saved results in {output_file}')
+# if __name__ == '__main__':
+#     import os
+#     import cv2
+#     from tqdm import tqdm
+#     from pathlib import Path
+#     video = '/home/masoud/Desktop/projects/volleyball_analytics/data/raw/videos/test/videos/11_short.mp4'
+#     output = '/home/masoud/Desktop/projects/volleyball_analytics/runs/inference/det'
+#     os.makedirs(output, exist_ok=True)
+#     cfg = {
+#         'weight': '/home/masoud/Desktop/projects/volleyball_analytics/weights/vb_actions_6_class/model1/weights/best.pt'
+#     }
+#
+#     action_detector = ActionDetector(cfg=cfg)
+#     cap = cv2.VideoCapture(video)
+#     assert cap.isOpened()
+#
+#     w, h, fps, _, n_frames = [int(cap.get(i)) for i in range(3, 8)]
+#     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+#     output_file = Path(output) / (Path(video).stem + '_output.mp4')
+#     writer = cv2.VideoWriter(output_file.as_posix(), fourcc, fps, (w, h))
+#
+#     for fno in tqdm(list(range(n_frames))):
+#         cap.set(1, fno)
+#         status, frame = cap.read()
+#         bboxes = action_detector.predict(frame)
+#         frame = action_detector.draw(frame, bboxes)
+#         writer.write(frame)
+#
+#     cap.release()
+#     writer.release()
+#     print(f'saved results in {output_file}')
+#     cv2.destroyAllWindows()
+#
